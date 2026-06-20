@@ -1,0 +1,39 @@
+{
+    "name": "klickmanufaktur/statamic-umami-analytics",
+    "description": "Reusable Statamic control panel analytics integration for Umami.",
+    "keywords": [
+        "statamic",
+        "addon",
+        "analytics",
+        "umami",
+        "control-panel"
+    ],
+    "license": "proprietary",
+    "type": "statamic-addon",
+    "homepage": "https://github.com/klickmanufaktur/statamic-umami-analytics",
+    "support": {
+        "source": "https://github.com/klickmanufaktur/statamic-umami-analytics"
+    },
+    "autoload": {
+        "psr-4": {
+            "Klickmanufaktur\\StatamicUmamiAnalytics\\": "src"
+        }
+    },
+    "require": {
+        "php": "^8.2",
+        "statamic/cms": "^6.0"
+    },
+    "extra": {
+        "statamic": {
+            "name": "Umami Analytics",
+            "slug": "statamic-umami-analytics",
+            "description": "Reusable Statamic control panel analytics integration for Umami."
+        },
+        "laravel": {
+            "providers": [
+                "Klickmanufaktur\\StatamicUmamiAnalytics\\ServiceProvider"
+            ]
+        }
+    },
+    "prefer-stable": true
+}

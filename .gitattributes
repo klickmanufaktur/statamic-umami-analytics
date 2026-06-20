@@ -1,0 +1,7 @@
+# Keep the distributed package lean: development-only files are excluded from
+# `composer install` archives. Built assets in resources/dist are kept.
+/.gitattributes export-ignore
+/.gitignore    export-ignore
+/resources/js  export-ignore
+/vite.config.js export-ignore
+/package.json  export-ignore
