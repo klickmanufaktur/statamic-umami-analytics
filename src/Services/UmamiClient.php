@@ -193,10 +193,10 @@ class UmamiClient
             'stats' => $data['stats'],
             'active' => $data['active'],
             'pageviews' => $data['pageviews'],
-            'topPages' => array_values($data['topPages']),
-            'referrers' => array_values($data['referrers']),
-            'devices' => array_values($data['devices']),
-            'countries' => array_values($data['countries']),
+            'topPages' => $this->sortByCount($data['topPages'], 'pageviews'),
+            'referrers' => $this->sortByCount($data['referrers'], 'y'),
+            'devices' => $this->sortByCount($data['devices'], 'y'),
+            'countries' => $this->sortByCount($data['countries'], 'y'),
         ];
     }
 
@@ -222,9 +222,9 @@ class UmamiClient
         return [
             'stats' => $data['stats'],
             'pageviews' => $data['pageviews'],
-            'referrers' => array_values($data['referrers']),
-            'devices' => array_values($data['devices']),
-            'countries' => array_values($data['countries']),
+            'referrers' => $this->sortByCount($data['referrers'], 'y'),
+            'devices' => $this->sortByCount($data['devices'], 'y'),
+            'countries' => $this->sortByCount($data['countries'], 'y'),
         ];
     }
 
@@ -262,7 +262,24 @@ class UmamiClient
             'limit' => $limit,
         ]));
 
-        return array_values(is_array($data) ? $data : []);
+        return $this->sortByCount(is_array($data) ? $data : [], $expanded ? 'pageviews' : 'y');
+    }
+
+    /**
+     * Umami's API doesn't guarantee metric rows come back sorted by count
+     * (e.g. `/metrics/expanded` has been observed returning path order), so
+     * enforce descending order here rather than trusting the response order.
+     *
+     * @param  array<int|string, array<string, mixed>>  $rows
+     * @return list<array<string, mixed>>
+     */
+    private function sortByCount(array $rows, string $key): array
+    {
+        $rows = array_values($rows);
+
+        usort($rows, fn (array $a, array $b): int => (int) ($b[$key] ?? 0) <=> (int) ($a[$key] ?? 0));
+
+        return $rows;
     }
 
     /**
