@@ -78,6 +78,41 @@ class UmamiClient
     }
 
     /**
+     * URL of the Umami tracking script.
+     */
+    public function scriptUrl(): string
+    {
+        $configured = trim((string) config('statamic-umami-analytics.script_url'));
+
+        if ($configured !== '') {
+            return rtrim($configured, '/');
+        }
+
+        $base = $this->dashboardUrl();
+
+        return $base === '' ? '' : "{$base}/script.js";
+    }
+
+    /**
+     * HTML `<script>` tag that loads the Umami tracking script for the configured website.
+     */
+    public function scriptTag(): string
+    {
+        $src = $this->scriptUrl();
+        $website = $this->websiteId();
+
+        if ($src === '' || $website === '') {
+            return '';
+        }
+
+        return sprintf(
+            '<script defer src="%s" data-website-id="%s"></script>',
+            htmlspecialchars($src, ENT_QUOTES),
+            htmlspecialchars($website, ENT_QUOTES)
+        );
+    }
+
+    /**
      * Fetch every dataset the overview needs in a single parallel batch.
      *
      * @return array<string, mixed>

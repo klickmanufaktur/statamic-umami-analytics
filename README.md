@@ -8,6 +8,7 @@ Reusable Statamic addon for showing Umami analytics inside the control panel.
 - Read-only analytics tab on configured entry collections.
 - Server-side Umami API client with timeouts and short cache TTL.
 - Supports Umami Cloud API keys, self-hosted bearer tokens, and self-hosted username/password login.
+- `{{ umami }}` Antlers tag that renders the front-end tracking script.
 
 ## Installation
 
@@ -89,6 +90,25 @@ mini chart. Enable it in your app's `config/statamic/cp.php` under `widgets`:
 
 The widget links through to the full Umami dashboard and respects the same
 configuration (API credentials, periods, dashboard URL) as the rest of the addon.
+
+## Tracking Script
+
+Add the `{{ umami }}` tag to your layout (e.g. right before `</head>`) to render
+the front-end tracking script:
+
+```antlers
+{{ umami }}
+```
+
+This outputs:
+
+```html
+<script defer src="https://umami.example.com/script.js" data-website-id="00000000-0000-0000-0000-000000000000"></script>
+```
+
+The script URL is derived from `dashboard_url` (or `api_url`) by default. Set
+`UMAMI_SCRIPT_URL` to override it, e.g. when the tracking script is served from
+a different host than the API/dashboard.
 
 ## Entry Tab
 

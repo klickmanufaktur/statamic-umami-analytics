@@ -17,6 +17,10 @@ return [
     // the API URL: api.umami.is -> cloud.umami.is, self-hosted -> URL without /api.
     'dashboard_url' => env('UMAMI_DASHBOARD_URL'),
 
+    // URL of the tracking script embedded via the {{ umami }} tag. Leave null
+    // to derive it from the dashboard URL (dashboard_url + /script.js).
+    'script_url' => env('UMAMI_SCRIPT_URL'),
+
     'website_id' => env('UMAMI_WEBSITE_ID'),
 
     'auth' => env('UMAMI_AUTH', 'auto'),

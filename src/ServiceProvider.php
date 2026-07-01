@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Event;
 use Klickmanufaktur\StatamicUmamiAnalytics\Fieldtypes\EntryAnalytics;
 use Klickmanufaktur\StatamicUmamiAnalytics\Services\AnalyticsData;
 use Klickmanufaktur\StatamicUmamiAnalytics\Services\UmamiClient;
+use Klickmanufaktur\StatamicUmamiAnalytics\Tags\UmamiTag;
 use Klickmanufaktur\StatamicUmamiAnalytics\Widgets\Overview;
 use Statamic\Events\EntryBlueprintFound;
 use Statamic\Facades\CP\Nav;
@@ -16,6 +17,10 @@ class ServiceProvider extends AddonServiceProvider
 {
     protected $fieldtypes = [
         EntryAnalytics::class,
+    ];
+
+    protected $tags = [
+        UmamiTag::class,
     ];
 
     protected $widgets = [
