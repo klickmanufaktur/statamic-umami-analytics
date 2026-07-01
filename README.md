@@ -103,12 +103,29 @@ the front-end tracking script:
 This outputs:
 
 ```html
-<script defer src="https://umami.example.com/script.js" data-website-id="00000000-0000-0000-0000-000000000000"></script>
+<script defer src="https://umami.example.com/script.js" data-website-id="00000000-0000-0000-0000-000000000000" data-domains="example.com,www.example.com" data-performance="true" data-do-not-track="true"></script>
 ```
 
 The script URL is derived from `dashboard_url` (or `api_url`) by default. Set
 `UMAMI_SCRIPT_URL` to override it, e.g. when the tracking script is served from
 a different host than the API/dashboard.
+
+### Tracker attributes
+
+Configure the `data-*` behaviour flags under `tracking` (see
+[tracker configuration](https://docs.umami.is/docs/tracker-configuration)):
+
+```dotenv
+# Restrict the tracker to these hostnames (comma-separated). Leave unset to
+# derive "host,www.host" from app.url, or set to "false" to disable.
+UMAMI_TRACKING_DOMAINS=
+
+# Collect Core Web Vitals (default: true).
+UMAMI_TRACKING_PERFORMANCE=true
+
+# Honour the visitor's browser "Do Not Track" setting (default: true).
+UMAMI_TRACKING_DO_NOT_TRACK=true
+```
 
 ## Entry Tab
 

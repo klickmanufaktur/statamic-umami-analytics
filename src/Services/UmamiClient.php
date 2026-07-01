@@ -105,11 +105,68 @@ class UmamiClient
             return '';
         }
 
-        return sprintf(
-            '<script defer src="%s" data-website-id="%s"></script>',
-            htmlspecialchars($src, ENT_QUOTES),
-            htmlspecialchars($website, ENT_QUOTES)
-        );
+        $attributes = [
+            'defer' => true,
+            'src' => $src,
+            'data-website-id' => $website,
+        ];
+
+        if ($domains = $this->scriptDomains()) {
+            $attributes['data-domains'] = $domains;
+        }
+
+        if (config('statamic-umami-analytics.tracking.performance', true)) {
+            $attributes['data-performance'] = 'true';
+        }
+
+        if (config('statamic-umami-analytics.tracking.do_not_track', true)) {
+            $attributes['data-do-not-track'] = 'true';
+        }
+
+        return '<script '.$this->renderAttributes($attributes).'></script>';
+    }
+
+    /**
+     * Comma-delimited domain list the tracker is allowed to run on, e.g. "example.com,www.example.com".
+     * Derived from `app.url` unless overridden, and disabled entirely when set to `false`.
+     */
+    private function scriptDomains(): ?string
+    {
+        $configured = config('statamic-umami-analytics.tracking.domains');
+
+        if ($configured === false) {
+            return null;
+        }
+
+        if (is_string($configured) && trim($configured) !== '') {
+            return trim($configured);
+        }
+
+        $host = parse_url((string) config('app.url'), PHP_URL_HOST);
+
+        if (! $host) {
+            return null;
+        }
+
+        $bare = preg_replace('/^www\./', '', $host);
+
+        return $bare === $host ? "{$bare},www.{$bare}" : "www.{$bare},{$bare}";
+    }
+
+    /**
+     * @param  array<string, bool|string>  $attributes
+     */
+    private function renderAttributes(array $attributes): string
+    {
+        $parts = [];
+
+        foreach ($attributes as $name => $value) {
+            $parts[] = $value === true
+                ? htmlspecialchars($name, ENT_QUOTES)
+                : sprintf('%s="%s"', htmlspecialchars($name, ENT_QUOTES), htmlspecialchars((string) $value, ENT_QUOTES));
+        }
+
+        return implode(' ', $parts);
     }
 
     /**

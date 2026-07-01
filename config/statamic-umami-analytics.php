@@ -65,4 +65,28 @@ return [
         'display' => 'Analytics',
         'field' => 'umami_analytics',
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Tracker attributes
+    |--------------------------------------------------------------------------
+    |
+    | Behaviour flags rendered as data-* attributes on the {{ umami }} script
+    | tag. See https://docs.umami.is/docs/tracker-configuration.
+    |
+    */
+
+    'tracking' => [
+        // data-domains: restricts the tracker to these hostnames, so hits from
+        // other domains/IPs pointing at this app aren't recorded. Leave null to
+        // derive "host,www.host" from `app.url`, set a comma-separated list to
+        // override, or `false` to disable the restriction entirely.
+        'domains' => env('UMAMI_TRACKING_DOMAINS'),
+
+        // data-performance: collects Core Web Vitals (LCP, CLS, INP, TTFB).
+        'performance' => (bool) env('UMAMI_TRACKING_PERFORMANCE', true),
+
+        // data-do-not-track: honours the visitor's browser "Do Not Track" setting.
+        'do_not_track' => (bool) env('UMAMI_TRACKING_DO_NOT_TRACK', true),
+    ],
 ];
