@@ -115,6 +115,13 @@ a different host than the API/dashboard.
 Configure the `data-*` behaviour flags under `tracking` (see
 [tracker configuration](https://docs.umami.is/docs/tracker-configuration)):
 
+> [!IMPORTANT]
+> Auto-derivation reads *that environment's own* `app.url`, so a staging
+> deployment would allow-list its own staging host and track itself. If
+> staging/preview environments exist, set `UMAMI_TRACKING_DOMAINS` explicitly
+> to the production domain in **every** environment's `.env` (not just
+> production) so only hits from the real domain are ever recorded.
+
 ```dotenv
 # Restrict the tracker to these hostnames (comma-separated). Leave unset to
 # derive "host,www.host" from app.url, or set to "false" to disable.
