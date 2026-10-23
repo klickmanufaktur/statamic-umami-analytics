@@ -10,7 +10,7 @@ class AnalyticsRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return (bool) User::current()?->can('access cp');
+        return (bool) User::current()?->can('view umami analytics');
     }
 
     /**

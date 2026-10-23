@@ -10,6 +10,8 @@ class DashboardController extends CpController
 {
     public function __invoke(UmamiClient $client): View
     {
+        $this->authorize('view umami analytics');
+
         return view('statamic-umami-analytics::cp.dashboard', [
             'title' => (string) config('statamic-umami-analytics.cp_nav.title', 'Analytics'),
             'overviewUrl' => cp_route('umami-analytics.api.overview'),

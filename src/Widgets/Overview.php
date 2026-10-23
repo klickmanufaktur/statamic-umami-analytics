@@ -3,6 +3,7 @@
 namespace Klickmanufaktur\StatamicUmamiAnalytics\Widgets;
 
 use Klickmanufaktur\StatamicUmamiAnalytics\Services\UmamiClient;
+use Statamic\Facades\User;
 use Statamic\Widgets\VueComponent;
 use Statamic\Widgets\Widget;
 
@@ -12,6 +13,10 @@ class Overview extends Widget
 
     public function component()
     {
+        if (! User::current()?->can('view umami analytics')) {
+            return null;
+        }
+
         $client = app(UmamiClient::class);
         $periods = config('statamic-umami-analytics.periods', [7, 30, 90]);
         $default = (int) config('statamic-umami-analytics.default_period', 30);

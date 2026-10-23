@@ -10,6 +10,8 @@ use Klickmanufaktur\StatamicUmamiAnalytics\Tags\UmamiTag;
 use Klickmanufaktur\StatamicUmamiAnalytics\Widgets\Overview;
 use Statamic\Events\EntryBlueprintFound;
 use Statamic\Facades\CP\Nav;
+use Statamic\Facades\Permission;
+use Statamic\Facades\User;
 use Statamic\Fields\Blueprint;
 use Statamic\Providers\AddonServiceProvider;
 
@@ -49,8 +51,20 @@ class ServiceProvider extends AddonServiceProvider
 
     public function bootAddon(): void
     {
+        $this->configurePermissions();
         $this->configureEntryAnalyticsTab();
         $this->configureCpNavigation();
+    }
+
+    private function configurePermissions(): void
+    {
+        Permission::extend(function (): void {
+            Permission::group('umami_analytics', 'Analytics', function (): void {
+                Permission::register('view umami analytics', function ($permission): void {
+                    $permission->label('Zugriffszahlen ansehen');
+                });
+            });
+        });
     }
 
     private function configureEntryAnalyticsTab(): void
@@ -74,6 +88,12 @@ class ServiceProvider extends AddonServiceProvider
 
         Event::listen(EntryBlueprintFound::class, function (EntryBlueprintFound $event) use ($collections, $tab, $display, $field): void {
             if (! $event->blueprint instanceof Blueprint) {
+                return;
+            }
+
+            if (! User::current()?->can('view umami analytics')) {
+                $this->removeEntryTab($event->blueprint, $tab, $field);
+
                 return;
             }
 
@@ -145,6 +165,21 @@ class ServiceProvider extends AddonServiceProvider
         $blueprint->setContents($contents);
     }
 
+    /**
+     * Also strips the field when a blueprint declares it explicitly.
+     */
+    private function removeEntryTab(Blueprint $blueprint, string $tab, string $field): void
+    {
+        $blueprint->removeField($field);
+
+        $remainingFields = collect($blueprint->contents()['tabs'][$tab]['sections'] ?? [])
+            ->flatMap(fn (array $section): array => $section['fields'] ?? []);
+
+        if ($blueprint->hasTab($tab) && $remainingFields->isEmpty()) {
+            $blueprint->removeTab($tab);
+        }
+    }
+
     private function configureCpNavigation(): void
     {
         Nav::extend(function ($nav): void {
@@ -154,6 +189,7 @@ class ServiceProvider extends AddonServiceProvider
             $nav->create($title)
                 ->section($section)
                 ->url(cp_route('umami-analytics.index'))
+                ->can('view umami analytics')
                 ->icon('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m7 14 3-3 3 2 5-7"/><path d="M18 6h-4"/><path d="M18 6v4"/></svg>');
         });
     }
